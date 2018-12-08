@@ -1,9 +1,12 @@
 package com.android.example.oleg;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -24,7 +27,6 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     private RequestQueue requestQueue;
-    private SQLiteDatabase db;
     private TextView textOut;
     private Button parseData;
     private Button loadDB;
@@ -33,6 +35,28 @@ public class MainActivity extends AppCompatActivity {
 
     private ArrayList<String> data;
     private int iterator;
+
+    public static String urlWA = "https://api.apixu.com/v1/forecast.json?key=7e87b02239054f0ca5862326180812&q=Omsk&days=";
+    public static SQLiteDatabase db;
+    public static int iteratorD = 1;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        Intent intent;
+        switch(id){
+            case R.id.service_settings:
+                intent = new Intent(this, DateActivity.class);
+                startActivity(intent);
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
         parseData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String url = "https://api.apixu.com/v1/forecast.json?key=133c08ba181244bf928111545181210&q=Omsk&days=7";
+                String url = urlWA+iteratorD;
                 JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
                         new Response.Listener<JSONObject>() {
                             @Override
@@ -99,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
                 requestQueue.add(request);
+                IncrIter();
             }
         });
 
@@ -163,5 +188,17 @@ public class MainActivity extends AppCompatActivity {
                 textOut.setText(data.get(iterator));
             }
         });
+    }
+
+    public static void IncrIter()
+    {
+        if(iteratorD == 7)
+        {
+            iteratorD = 1;
+        }
+        else
+        {
+            iteratorD++;
+        }
     }
 }
