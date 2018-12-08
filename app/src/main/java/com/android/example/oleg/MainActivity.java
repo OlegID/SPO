@@ -73,13 +73,15 @@ public class MainActivity extends AppCompatActivity {
 
         db = getBaseContext().openOrCreateDatabase("weather.db", MODE_PRIVATE, null);
         db.execSQL("CREATE TABLE IF NOT EXISTS weather (city TEXT, date TEXT, maxtemperature REAL, mintemperature REAL, wind REAL, humidity REAL, condition TEXT)");
+        db.execSQL("DROP TABLE weather");
+        db.execSQL("CREATE TABLE IF NOT EXISTS weather (city TEXT, date TEXT, maxtemperature REAL, mintemperature REAL, wind REAL, humidity REAL, condition TEXT)");
 
 
 
         parseData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String url = urlWA+iteratorD;
+                String url = urlWA + iteratorD;
                 JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
                         new Response.Listener<JSONObject>() {
                             @Override
@@ -89,9 +91,7 @@ public class MainActivity extends AppCompatActivity {
                                     String city = location.getString("name");
                                     JSONObject forecast = response.getJSONObject("forecast");
                                     JSONArray forecastday = forecast.getJSONArray("forecastday");
-
-                                    for (int i = 0; i < forecastday.length(); i++) {
-                                        JSONObject oneday = forecastday.getJSONObject(i);
+                                        JSONObject oneday = forecastday.getJSONObject(forecastday.length()-1);
 
                                         String date = oneday.getString("date");
                                         JSONObject day = oneday.getJSONObject("day");
@@ -109,8 +109,9 @@ public class MainActivity extends AppCompatActivity {
                                                                                 "," + wind +
                                                                                 "," + humidity +
                                                                                 ",'" + text + "');");
-                                    }
+
                                     textOut.setText("Data successfully parsed");
+                                    IncrIter();
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -123,13 +124,13 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
                 requestQueue.add(request);
-                IncrIter();
             }
         });
 
         loadDB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                data = new ArrayList<String>();
                 Cursor query = db.rawQuery("SELECT * FROM weather;", null);
                 if(query.moveToFirst()){
                     do
@@ -162,41 +163,35 @@ public class MainActivity extends AppCompatActivity {
         nextData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(iterator < data.size() - 1)
-                {
-                    iterator++;
+                if(data.size() != 0) {
+                    if (iterator < data.size() - 1) {
+                        iterator++;
+                    } else {
+                        iterator = 0;
+                    }
+                    textOut.setText(data.get(iterator));
                 }
-                else
-                {
-                    iterator = 0;
-                }
-                textOut.setText(data.get(iterator));
             }
         });
 
         prevData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(iterator > 0)
-                {
-                    iterator--;
+                if(data.size() != 0) {
+                    if (iterator > 0) {
+                        iterator--;
+                    } else {
+                        iterator = data.size() - 1;
+                    }
+                    textOut.setText(data.get(iterator));
                 }
-                else
-                {
-                    iterator = data.size()-1;
-                }
-                textOut.setText(data.get(iterator));
             }
         });
     }
 
     public static void IncrIter()
     {
-        if(iteratorD == 7)
-        {
-            iteratorD = 1;
-        }
-        else
+        if(iteratorD != 7)
         {
             iteratorD++;
         }

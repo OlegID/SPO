@@ -53,17 +53,17 @@ public class ParseService extends Service {
         final int time = intent.getIntExtra("time", 0);
         parsing = new Thread(new Runnable() {
             public void run() {
-                int startI;
-                if(MainActivity.iteratorD == 1) {
-                    startI = 7;
+                if (MainActivity.iteratorD == 7)
+                {
+                    shouldContinue = false;
                 }
-                else {
-                    startI = MainActivity.iteratorD-1;
+                else
+                {
+                    shouldContinue = true;
                 }
-
                 while (shouldContinue)
                 {
-                    if (MainActivity.iteratorD == startI)
+                    if (MainActivity.iteratorD == 7)
                     {
                         shouldContinue = false;
                     }
@@ -98,7 +98,7 @@ public class ParseService extends Service {
                             String city = location.getString("name");
                             JSONObject forecast = response.getJSONObject("forecast");
                             JSONArray forecastday = forecast.getJSONArray("forecastday");
-                            JSONObject oneday = forecastday.getJSONObject(MainActivity.iteratorD);
+                            JSONObject oneday = forecastday.getJSONObject(forecastday.length()-1);
 
                             String date = oneday.getString("date");
                             JSONObject day = oneday.getJSONObject("day");

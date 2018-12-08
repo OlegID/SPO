@@ -20,7 +20,7 @@
 
     <EditText
         android:id="@+id/editText"
-        android:layout_width="84dp"
+        android:layout_width="40dp"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
