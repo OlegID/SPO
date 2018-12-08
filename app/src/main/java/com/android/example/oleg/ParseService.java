@@ -53,7 +53,14 @@ public class ParseService extends Service {
         final int time = intent.getIntExtra("time", 0);
         parsing = new Thread(new Runnable() {
             public void run() {
-                int startI = MainActivity.iteratorD;
+                int startI;
+                if(MainActivity.iteratorD == 1) {
+                    startI = 7;
+                }
+                else {
+                    startI = MainActivity.iteratorD-1;
+                }
+
                 while (shouldContinue)
                 {
                     if (MainActivity.iteratorD == startI)
@@ -62,12 +69,10 @@ public class ParseService extends Service {
                     }
                     url = MainActivity.urlWA + MainActivity.iteratorD;
                         getData();
-                        if (pContent!=null) {
                             createNotification();
                             NotificationManager notificationManager =
                                     (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                             notificationManager.notify(MainActivity.iteratorD, notification);
-                        }
                     MainActivity.IncrIter();
                     try {
                         TimeUnit.SECONDS.sleep(time);
